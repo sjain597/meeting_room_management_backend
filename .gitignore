@@ -1,0 +1,18 @@
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+# esbuild directories
+.esbuild
+package-lock.json
+.env
+.env.dev
+.env.development
+.env.production
+.env.com
+.env.staging
+
+.todo
