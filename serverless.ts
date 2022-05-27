@@ -1,7 +1,7 @@
 import type { AWS } from "@serverless/typescript";
 import { sendMail } from "@functions/mail";
 const serverlessConfiguration: AWS = {
-  service: "right-data-backend",
+  service: "meeting-room-mgmt",
   useDotenv: true,
   frameworkVersion: "3",
   plugins: [
@@ -19,13 +19,6 @@ const serverlessConfiguration: AWS = {
     apiGateway: {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,
-      resourcePolicy :{
-        Condition :{
-          IpAddress : {
-            'aws:SourceIp' : 'www.demo.divami.com'
-          }
-        }
-      } as any
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
