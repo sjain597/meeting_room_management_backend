@@ -1,6 +1,7 @@
 import type { AWS } from "@serverless/typescript";
 import { createUser,user } from "@functions/user";
 import { changeMemberRole } from "@functions/admin";
+import {getRoom,deleteRoom,updateRoom,createRoom} from "@functions/room";
 const serverlessConfiguration: AWS = {
   service: "meeting-room-mgmt",
   useDotenv: true,
@@ -30,7 +31,12 @@ const serverlessConfiguration: AWS = {
   functions: {
     createUser,
     user,
-    changeMemberRole
+    changeMemberRole,
+    getRoom,
+    deleteRoom,
+    updateRoom,
+    createRoom
+
   },
   package: { individually: true },
   custom: {
