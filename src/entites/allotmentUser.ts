@@ -6,16 +6,18 @@ import { User } from './user'
 export class AllotmentUser {
     @Column({ type: 'string', name: 'allotment_id' })
     allotmentId: string
+    
     @PrimaryColumn({ type: 'string', name: 'user_id' })
     userId: string
-    @ManyToOne("AllotmentUser", "MeetingAllotment")
+
+    @ManyToOne("MeetingAllotment","AllotmentUser")
     @JoinColumn({
         name: "allotment_id",
         referencedColumnName: "allotmentId"
     })
     readonly MeetingAllotment?: MeetingAllotmnt;
 
-    @ManyToOne("AllotmentUser","User")
+    @ManyToOne("User","AllotmentUser")
     @JoinColumn({
         name: 'user_id',
         referencedColumnName: 'userId'
