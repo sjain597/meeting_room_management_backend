@@ -1,7 +1,8 @@
 import type { AWS } from "@serverless/typescript";
-import { createUser,user } from "@functions/user";
+import { createUser, user } from "@functions/user";
 import { changeMemberRole } from "@functions/admin";
-import {getRoom,deleteRoom,updateRoom,createRoom} from "@functions/room";
+import { getRoom, deleteRoom, updateRoom, createRoom } from "@functions/room";
+import { createBooking } from "@functions/booking";
 const serverlessConfiguration: AWS = {
   service: "meeting-room-mgmt",
   useDotenv: true,
@@ -26,7 +27,6 @@ const serverlessConfiguration: AWS = {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       NODE_OPTIONS: "--enable-source-maps --stack-trace-limit=1000",
     },
-    
   },
   functions: {
     createUser,
@@ -35,8 +35,8 @@ const serverlessConfiguration: AWS = {
     getRoom,
     deleteRoom,
     updateRoom,
-    createRoom
-
+    createRoom,
+    createBooking,
   },
   package: { individually: true },
   custom: {
@@ -44,7 +44,7 @@ const serverlessConfiguration: AWS = {
       bundle: true,
       minify: false,
       sourcemap: true,
-      exclude: ["aws-sdk","pg-native"],
+      exclude: ["aws-sdk", "pg-native"],
       target: "node14",
       define: { "require.resolve": undefined },
       platform: "node",
@@ -59,7 +59,6 @@ const serverlessConfiguration: AWS = {
       number: 1,
     },
   },
-  
 };
 
 module.exports = serverlessConfiguration;

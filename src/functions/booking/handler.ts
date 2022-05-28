@@ -84,3 +84,9 @@ const createBookingHandler = async (
   }))
   return formatJSONResponse({message : 'success'})
 };
+
+
+const userBookingHandler = async (event: APIGatewayProxyEventWithConnection) => {
+  
+}
+export const createBooking = middyfy(createBookingHandler)
