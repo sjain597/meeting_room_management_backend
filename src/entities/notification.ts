@@ -3,16 +3,16 @@ import { User } from "./user";
 
 @Entity("notification")
 export class Notification {
-  @PrimaryColumn({ type: "string", name: "notification_id" })
+  @PrimaryColumn({ type: "uuid", name: "notification_id" })
   notificationId: string;
 
-  @Column({ name: "title", type: "string" })
+  @Column({ name: "title", type: "character varying" })
   title: string;
 
-  @Column({ name: "content", type: "string" })
+  @Column({ name: "content", type: "character varying" })
   content: string;
 
-  @Column({ type: "string", name: "user_id" })
+  @Column({ type: "uuid", name: "user_id" })
   userId: string;
 
   constructor(

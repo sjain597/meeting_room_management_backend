@@ -1,19 +1,19 @@
 import { PrimaryColumn, Entity, Column } from "typeorm";
 @Entity("meeting_room")
 export class MeetingRoom {
-  @PrimaryColumn({ name: "room_id" })
+  @PrimaryColumn({ name: "room_id" ,type:'uuid'})
   roomId: string;
 
-  @Column({  name: "seats" })
+  @Column({  name: "seats",type:'bigint' })
   seats: number;
 
-  @Column({  name: "whiteboard" })
+  @Column({  name: "whiteboard", type:'boolean'})
   whiteboard: boolean;
 
-  @Column({ name: "room_name" })
+  @Column({ name: "room_name", type :'character varying' })
   roomName: string;
 
-  @Column({  name: "projector" })
+  @Column({  name: "projector", type : 'boolean' })
   projector: boolean;
 
   constructor(

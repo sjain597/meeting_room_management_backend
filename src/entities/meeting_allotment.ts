@@ -11,29 +11,29 @@ import { MeetingRoom } from "./meetingroom";
 
 @Entity("meeting_allotment")
 export class MeetingAllotment {
-  @PrimaryColumn({ name: "allotment_id" })
+  @PrimaryColumn({ type:'uuid', name: "allotment_id" })
   allotmentId: string;
 
-  @Column({ name: "start_time" })
-  startTime?: Date;
+  @Column({ type:'timestamp with time zone', name: "start_time" })
+  startTime?: string;
 
-  @Column({ name: "end_time" })
-  endTime?: Date;
+  @Column({type:'timestamp with time zone',  name: "end_time" })
+  endTime?: string;
 
-  @Column({ name: "approved" })
+  @Column({ name: "approved", type : 'boolean' })
   approved: boolean;
 
-  @Column({ name: "room_id" })
+  @Column({ name: "room_id" , type : "uuid"})
   roomId?: string;
 
-  @Column({ name: "status" })
+  @Column({ name: "status", type :'character varying' })
   status?: string;
 
-  @Column({ name: "assigned_to_user_id" })
+  @Column({ name: "assigned_to_user_id", type : 'uuid' })
   assignedToUserId?: string;
 
-//   @OneToMany("MeetingAllotmnt", "AllotmentUser")
-//   readonly AllotmentUser?: AllotmentUser[];
+  @OneToMany("AllotmentUser", "meetingAllotment")
+  readonly allotmentUser?: AllotmentUser[];
 
 //   @OneToOne(() => MeetingRoom)
 //   @JoinColumn({
@@ -45,8 +45,8 @@ export class MeetingAllotment {
   constructor(
     allotmentId: string,
     approved: boolean,
-    startTime?: Date,
-    endTime?: Date,
+    startTime?: string,
+    endTime?: string,
     roomId?: string,
     status?: string,
     assignedToUserId?: string

@@ -12,3 +12,16 @@ export const createUser = {
     },
   ],
 };
+
+export const user = {
+  handler: `${handlerPath(__dirname)}/handler.user`,
+  events: [
+    {
+      http: {
+        method: 'get',
+        path: 'user',
+        cors: true,
+      },
+    },
+  ],
+};

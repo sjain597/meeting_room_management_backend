@@ -1,5 +1,6 @@
 import type { AWS } from "@serverless/typescript";
-import { createUser } from "@functions/user";
+import { createUser,user } from "@functions/user";
+import { changeMemberRole } from "@functions/admin";
 const serverlessConfiguration: AWS = {
   service: "meeting-room-mgmt",
   useDotenv: true,
@@ -27,7 +28,9 @@ const serverlessConfiguration: AWS = {
     
   },
   functions: {
-    createUser
+    createUser,
+    user,
+    changeMemberRole
   },
   package: { individually: true },
   custom: {
@@ -35,13 +38,13 @@ const serverlessConfiguration: AWS = {
       bundle: true,
       minify: false,
       sourcemap: true,
-      exclude: ["aws-sdk"],
+      exclude: ["aws-sdk","pg-native"],
       target: "node14",
       define: { "require.resolve": undefined },
       platform: "node",
       concurrency: 10,
     },
-    defaultStage: "development",
+    defaultStage: "dev",
     defaultRegion: "ap-south-1",
     stage: "${opt:stage,self:custom.defaultStage}",
     region: "${opt:region,self:custom.defaultRegion}",
