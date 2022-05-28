@@ -1,3 +1,5 @@
+import { Admin } from "@entitites/admin";
+import { User } from "@entitites/user";
 import {
   formatHandlerBody,
   formatJSONResponse,
@@ -15,23 +17,24 @@ interface CreateUserContext {
 }
 
 const createUserHandler = async (event : APIGatewayProxyEventWithConnection) => {
-    const {email, name,url} = formatHandlerBody(event.body) as CreateUserContext;
     const {entityManager} = event
-    const userRepo = entityManager.getRepository<user>("user");
-    const adminRepo = entityManager.getRepository<admin>("admin");
+
+    const {email, name,url} = formatHandlerBody(event.body) as CreateUserContext;
+    const userRepo = entityManager.getRepository<User>("User");
+    const adminRepo = entityManager.getRepository<Admin>("Admin");
     const user = await userRepo.findOne({where:{emailId : email}})
     if(user){
         return formatJSONResponse({message : 'success'})
     }
     const admin = await adminRepo.findOne({where:{emailId : email}})
-    await userRepo.insert({
+    const res = await userRepo.insert({
         isAdmin : admin ? true : false,
         emailId : email,
         name,
-        imagUrl : url ? url : null,
+        imageUrl : url ? url : null,
     })
 
-    return formatJSONResponse({message : 'success',})
+    return formatJSONResponse({message : 'success',userDetails : res.generatedMaps[0]})
 }
 
 export const createUser = middyfy(createUserHandler,{
