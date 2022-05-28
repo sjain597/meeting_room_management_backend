@@ -1,5 +1,5 @@
 import type { AWS } from "@serverless/typescript";
-import { sendMail } from "@functions/mail";
+import { createUser } from "@functions/user";
 const serverlessConfiguration: AWS = {
   service: "meeting-room-mgmt",
   useDotenv: true,
@@ -27,7 +27,7 @@ const serverlessConfiguration: AWS = {
     
   },
   functions: {
-    sendMail
+    createUser
   },
   package: { individually: true },
   custom: {

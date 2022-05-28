@@ -4,11 +4,18 @@ import httpErrorHandler from "@middy/http-error-handler";
 import middyJsonBodyParser from "@middy/http-json-body-parser";
 import httpMultipartBodyParse from "@middy/http-multipart-body-parser";
 import { APIGatewayEvent, APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import { EntityManager } from "typeorm";
 import * as Joi from "joi";
+import jwtDecode from "jwt-decode";
+import { initiateDbConnection } from "./dbConnection";
 import { formatHandlerBody, formatJSONError } from "./api-gateway";
 import { validateRequest } from "./validator";
 
 
+export interface APIGatewayProxyEventWithConnection
+  extends APIGatewayProxyEvent {
+  entityManager: EntityManager;
+}
 
 interface ValidationSchema {
   readonly bodySchema?: Joi.Schema;
@@ -16,14 +23,44 @@ interface ValidationSchema {
   readonly paramsSchema?: Joi.Schema;
 }
 
+export const transactionWrapper = (
+  handler: (
+    request: APIGatewayProxyEventWithConnection
+  ) => Promise<Record<string, any>>
+) => {
+  const transactedHandler = async (event: APIGatewayProxyEvent) => {
+    const dataSource = await initiateDbConnection();
+    const queryRunner = dataSource.createQueryRunner();
+    await queryRunner.connect();
+    const entityManager = queryRunner.manager;
+    await queryRunner.startTransaction();
+    let res: any;
+    try {
+      res = await handler({ ...event, entityManager });
+      if (res && res.statusCode !== 500) {
+        await queryRunner.commitTransaction();
+      } else {
+        await queryRunner.rollbackTransaction();
+      }
+    } catch (error) {
+      res = formatJSONError({ ...error });
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+    return res;
+  };
+  return transactedHandler;
+};
+
 export const middyfy = (
   handler: (
-    event: APIGatewayProxyEvent
+    event: APIGatewayProxyEventWithConnection | APIGatewayProxyEvent
   ) => Promise<Record<string, any>>,
   validationSchema?: ValidationSchema,
+  startTransaction: boolean = true
 ) => {
-  return middy(handler)
-    // .use(decodeIdToken())
+  return middy(startTransaction ? transactionWrapper(handler) : handler)
     .use(addContentType())
     .use(httpMultipartBodyParse())
     .use(middyJsonBodyParser())
@@ -39,40 +76,6 @@ export const middyfy = (
 
 }
 
-// const decodeIdToken = (): middy.MiddlewareObject<
-//   APIGatewayEvent,
-//   APIGatewayProxyResult
-// > => {
-//   const before = (
-//     handler: middy.HandlerLambda<APIGatewayEvent, APIGatewayProxyResult>,
-//     next
-//   ) => {
-//     if (
-//       handler &&
-//       handler.event &&
-//       handler.event.headers &&
-//       handler.event.headers.Authorization
-//     ) {
-//       const token = handler.event.headers.Authorization.replace("Bearer ", "");
-//       const decodedToken: any = jwtDecode(token);
-//       const userDetails = {
-//         email: decodedToken.email,
-//         userId: decodedToken.sub,
-//         name: decodedToken.name,
-//         phoneNumber: decodedToken.phone_number,
-//       };
-//       handler.event.headers = {
-//         ...handler.event.headers,
-//         ...userDetails,
-//       };
-//     }
-//     next();
-//   };
-
-//   return {
-//     before,
-//   };
-// };
 
 const addContentType = (): middy.MiddlewareObject<
   APIGatewayEvent,
